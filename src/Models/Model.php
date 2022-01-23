@@ -12,7 +12,7 @@
 
 
     public function getConnexion(){
-        var_dump($this->host);
+    
         $this->_connexion = null;
         try{
             $this->_connexion = new PDO("mysql:host=".$_ENV['HOST'], $_ENV['USER'], $_ENV['PASS']);
