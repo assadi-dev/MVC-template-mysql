@@ -27,7 +27,8 @@
 
     public function createTable (){
         $sql = "CREATE TABLE IF NO EXISTS ".$this->table;
-
+        $query = $this->_connexion->prepare($sql);
+        $query->execute();
     }
 
     public function findAll(){
