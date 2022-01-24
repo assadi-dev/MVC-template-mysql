@@ -23,17 +23,17 @@ class ArticlesController extends AbstractController
     public function create()
     {
         $model = new Articles();
-        $articles = $model->setTitre('Apprendre le python')
+        $articles = $model->setTitre('Apprendre le Java')
                     ->setDescription("Descriptions")
                     ->setActif(true);
-        $model->create($articles);            
+        $model->create( $articles);            
         echo "create Article";
     }
 
-    public function findOne()
+    public function read(int $id)
     {
         $model = new Articles();
-        $article = $model->findBy(["actif"=>1]);     
+        $article = $model->findByID($id);     
         var_dump($article);
     }
 

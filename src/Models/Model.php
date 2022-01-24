@@ -11,7 +11,7 @@ use App\Core\Database;
     private $db;
     
 
-
+ 
     public function requete(string $sql,array $attributs = null){
         $this->db = Database::getInstance();
 

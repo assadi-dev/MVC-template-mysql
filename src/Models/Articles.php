@@ -15,6 +15,7 @@ class Articles extends Model
 
     public function __construct() {
 
+       
         $this->table = "articles";
         
     }
