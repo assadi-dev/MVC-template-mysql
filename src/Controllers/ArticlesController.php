@@ -16,7 +16,7 @@ class ArticlesController extends AbstractController
         $model = new Articles();
         $articles = $model->findAll();
         
-         
+      
         $this->render("articles/index.html.twig",["articles"=>$articles]);
     }
 
@@ -34,7 +34,8 @@ class ArticlesController extends AbstractController
     {
         $model = new Articles();
         $article = $model->findByID($id);     
-        var_dump($article);
+       // var_dump($article);
+       $this->httpSend($article);
     }
 
 

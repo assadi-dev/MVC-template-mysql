@@ -14,7 +14,7 @@ class Main
         $uri = $_SERVER['REQUEST_URI'];
        
 
-       /* if(!empty($uri) && $uri != "/" && $uri[-1] === "/"){
+        /*if(!empty($uri) && $uri[-1] === "/" && $uri != "/" ){
            
          
             $uri = substr($uri, 0,-1);
@@ -25,8 +25,8 @@ class Main
             
         // Get parameters
         $params = [];
-        if(isset($_GET['p']))
-            $params = explode('/',$_GET['p']);
+        if(isset($_GET['page']))
+            $params = explode('/',$_GET['page']);
             if($params[0] != ''){
                 
                 //get controller name when params > 1
