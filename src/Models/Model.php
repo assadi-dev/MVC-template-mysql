@@ -1,27 +1,30 @@
 <?php
+namespace App\Models;
 
 
- abstract class Model {
+use App\Core\Database;
 
-    protected $_connexion;
+ abstract class Model extends Database {
 
+    
     public $table;
-    public $id;
+    private $db;
     
-  
 
 
-    public function getConnexion(){
-    
-        $this->_connexion = null;
-        try{
-            $this->_connexion = new PDO("mysql:host=".$_ENV['HOST'], $_ENV['USER'], $_ENV['PASS']);
-            $sql = "CREATE DATABASE IF NOT EXISTS `".$_ENV['DBNAME']."` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
-            $this->_connexion->prepare($sql)->execute();
-        }catch(PDOException $exception){
-            echo "Erreur de connexion : ".$exception->getMessage();
+    public function requete(string $sql,array $attributs = null){
+        $this->db = Database::getInstance();
+
+        if($attributs !== null){
+            // prepare query
+            $query = $this->db->prepare($sql);
+            $query->execute($attributs);
+            return $query;
+        }else{
+            // Simple query
+            return $this->db->query($sql);
         }
-
+    
 
     }
 
@@ -32,17 +35,14 @@
     }
 
     public function findAll(){
-        $sql = "SELECT * FROM ".$this->table;
-        $query = $this->_connexion->prepare($sql);
-        $query->execute();
-        return $query->fetchAll();   
+        $query = $this->requete('SELECT * FROM '.$this->table);
+        return $query->fetchAll();
 
     }
 
-    public function findByID(){
-        $sql = "SELECT * FROM ".$this->table." WHERE id=".$this->id;
-        $query = $this->_connexion->prepare($sql);
-        $query->execute();
+    public function findByID(int $id){
+        $sql = "SELECT * FROM ".$this->table." WHERE id=".$id." LIMIT 0,1";
+        return $this->requete($sql)->fetch();
     }
 
     public function findBy(array $options){
@@ -58,12 +58,48 @@
         $fielList = implode(" AND ",$fields);
 
         //Execute query
-        $sql = "SELECT * FROM {$this->table} WHERE {$this->$fielList}";
-        $query = $this->_connexion->prepare($sql);
-        $query->execute($options);
-        return $query->fetchAll();   
+        $sql = "SELECT * FROM {$this->table} WHERE {$fielList}";
+        return $this->requete($sql,$values)->fetchAll();
 
 
+    }
+
+    public function create(Model $model){
+
+        $fields = [];
+        $inter = [];
+        $values = [];
+
+        foreach ($model as $key => $value) {
+            if($value != null && $key != "db" && $key != "table")
+            {
+                $fields[]="$key";
+                $inter[] = "?";
+                $values[]=$value;
+            }
+
+        }
+       
+        //table to string
+        $fielList = implode(" , ",$fields);
+        $interList = implode(" , ",$inter);
+
+        //Execute query
+        $sql = "INSERT INTO {$this->table} ({$fielList}) VALUES ({$interList})";
+        return $this->requete($sql,$values);
+
+    }
+
+    public function hydrate(array $data){
+        foreach ($data as $key => $value){
+            //get setter correspond key
+            $setter = "set".ucfirst("$key");
+            // verify if setter exists
+            if(method_exists($this,$setter)){
+                $this->$setter($value);
+            }
+        }
+        return $this;
     }
 
 
